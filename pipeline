@@ -1,64 +1,35 @@
 pipeline {
     agent any
-    
-    tools {
-        nodejs 'NodeJS 18.20.8'  // Requires NodeJS plugin installed in Jenkins
-    }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/SnehithJothiShiju/8.2CDevSecOps.git'
+                git branch: 'main', url: 'https://github.com/SnehithJothiShiju/8.2CDevSecOps.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 bat 'npm install'
-                // Verify installation succeeded
-                bat 'if %errorlevel% neq 0 exit /b %errorlevel%'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test || exit /b 0'  // Continue even if tests fail
+                bat 'npm test || exit /b 0' // Continue even if tests fail
             }
         }
 
         stage('Generate Coverage Report') {
             steps {
-                bat 'npm run coverage || exit /b 0'  // Continue if coverage fails
+                bat 'npm run coverage || exit /b 0'
             }
         }
 
         stage('NPM Audit (Security Scan)') {
             steps {
-                bat '''
-                    echo "Running security audit..."
-                    npm audit --audit-level=moderate
-                    if %errorlevel% neq 0 (
-                        echo "Vulnerabilities found! See report above."
-                        exit /b 0
-                    )
-                '''
+                bat 'npm audit || exit /b 0' // Continue despite security scan failures
             }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline execution completed"
-            // Add any cleanup steps here
-        }
-        success {
-            echo "Pipeline succeeded!"
-            // Optional: Add success notifications (email, Slack, etc.)
-        }
-        failure {
-            echo "Pipeline failed!"
-            // Optional: Add failure notifications
         }
     }
 }
