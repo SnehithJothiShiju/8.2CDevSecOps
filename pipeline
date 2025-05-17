@@ -4,7 +4,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git branch: 'main', url: 'https://github.com/SnehithJothiShiju/8.2CDevSecOps.git'
+        git branch: 'main', url: 'https://github.com/your_github_username/8.2CDevSecOps.git'
       }
     }
 
@@ -16,23 +16,22 @@ pipeline {
 
     stage('Run Tests') {
       steps {
-        bat 'npm test || exit /b 0'
+        bat 'npm test || exit /b 0' // Allows pipeline to continue despite test failures
       }
     }
 
     stage('Generate Coverage Report') {
       steps {
-        bat 'npm run coverage || exit /b 0'
+        bat 'npm run coverage || exit /b 0' // Prevents pipeline failure if script is missing
       }
     }
 
     stage('NPM Audit (Security Scan)') {
       steps {
-        bat 'npm audit || exit /b 0'
+        bat 'npm audit || exit /b 0' // Show vulnerabilities but don’t fail the build
       }
     }
 
-    //Updated SonarCloud Stage using globally installed sonar-scanner
     stage('SonarCloud Analysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
