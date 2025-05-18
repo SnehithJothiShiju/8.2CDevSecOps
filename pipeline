@@ -3,8 +3,7 @@ pipeline {
      environment {
         SONAR_HOST_URL = 'https://sonarcloud.io'
         SONAR_PROJECT_KEY = 'SnehithJothiShiju_8.2CDevSecOps'
-        SONAR_ORGANIZATION = 'SnehithJothiShiju
-'
+        SONAR_ORGANIZATION = 'SnehithJothiShiju'
     }
     
     stages {
