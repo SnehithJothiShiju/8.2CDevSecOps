@@ -1,5 +1,10 @@
 pipeline {
   agent any
+  environment {
+    SONAR_HOST_URL = 'https://sonarcloud.io'
+    SONAR_PROJECT_KEY = 'SnehithJothiShiju_8.2CDevSecOps'
+    SONAR_ORGANIZATION = 'SnehithJothiShiju'
+  }
 
   stages {
     stage('Checkout') {
@@ -28,14 +33,22 @@ pipeline {
 
     stage('NPM Audit (Security Scan)') {
       steps {
-        bat 'npm audit || exit /b 0' // Show vulnerabilities but don’t fail the build
+        bat 'npm audit || exit /b 0' // Show vulnerabilities but don't fail the build
       }
     }
 
     stage('SonarCloud Analysis') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-          bat 'sonar-scanner'
+          bat """
+            sonar-scanner \
+              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+              -Dsonar.organization=${SONAR_ORGANIZATION} \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=${SONAR_HOST_URL} \
+              -Dsonar.login=${SONAR_TOKEN} \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          """
         }
       }
     }
